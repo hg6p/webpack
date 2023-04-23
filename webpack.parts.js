@@ -79,3 +79,10 @@ exports.eliminateUnusedCSS = () => ({
     }),
   ],
 });
+
+exports.autoprefixer = () => ({
+  loader: 'postcss-loader',
+  options: {
+    postcssOptions: { plugins: [require('autoprefixer')()] },
+  },
+});
