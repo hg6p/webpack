@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "wp --mode production & npx serve dist",
+    "build": "wp --mode production: & npx serve dist",
     "start": "wp --mode development",
     "watch": "nodemon --watch \"./webpack.*.*\" --exec \"npm start\""
   },

@@ -6,3 +6,9 @@
 body {
   background-color: red;
 }
+
+.yasuo {
+  background-image: url('./zed.jpg');
+  background-repeat: no-repeat;
+  background-position: center;
+}
