@@ -8,6 +8,8 @@ const commonConfig = merge([
   { entry: ['./src'] },
   parts.page({ title: 'Demo' }),
   parts.extractCSS({ loaders: cssLoaders }),
+  parts.loadJavaScript(),
+  /*   parts.generateSourceMaps({ type: 'source-map' }), */
 ]);
 
 const productionConfig = merge([parts.eliminateUnusedCSS()]);
@@ -19,8 +21,14 @@ const developmentConfig = merge([
 
 const getConfig = (mode) => {
   switch (mode) {
+    case 'prod:legacy':
+      process.env.BROWSERSLIST_ENV = 'legacy';
+      return merge(commonConfig, productionConfig);
+    case 'prod:modern':
+      process.env.BROWSERSLIST_ENV = 'modern';
+      return merge(commonConfig, productionConfig);
     case 'production':
-      return merge(commonConfig, productionConfig, { mode });
+      return merge(commonConfig, productionConfig, { mode: 'none' });
     case 'development':
       return merge(commonConfig, developmentConfig, { mode });
     default:

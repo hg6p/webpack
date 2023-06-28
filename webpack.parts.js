@@ -80,9 +80,22 @@ exports.eliminateUnusedCSS = () => ({
   ],
 });
 
+const APP_SOURCE = path.join(__dirname, 'src');
+
+exports.loadJavaScript = () => ({
+  module: {
+    rules: [
+      // Consider extracting include as a parameter
+      { test: /\.js$/, include: APP_SOURCE, use: 'babel-loader' },
+    ],
+  },
+});
+
 exports.autoprefixer = () => ({
   loader: 'postcss-loader',
   options: {
     postcssOptions: { plugins: [require('autoprefixer')()] },
   },
 });
+
+exports.generateSourceMaps = ({ type }) => ({ devtool: type });
