@@ -1,18 +1,42 @@
 const { mode } = require('webpack-nano/argv');
 const { merge } = require('webpack-merge');
 const parts = require('./webpack.parts');
-
+const path = require("path")
 const cssLoaders = [parts.autoprefixer(), parts.tailwind()];
 
 const commonConfig = merge([
-  { entry: ['./src'] },
+  {
+    entry: {
+      app: {
+        import: path.join(__dirname, "src", "index.js"),
+        dependOn: "vendor",
+      },
+      vendor: ["react", "react-dom"],
+    },
+    optimization: {
+      moduleIds: "named"
+    },
+    output: {
+      chunkFilename: "chunk.[id].js",
+    }
+  },
+  parts.clean(),
   parts.page({ title: 'Demo' }),
   parts.extractCSS({ loaders: cssLoaders }),
   parts.loadJavaScript(),
-  /*   parts.generateSourceMaps({ type: 'source-map' }), */
+  parts.generateSourceMaps({ type: 'source-map' }),
 ]);
 
-const productionConfig = merge([parts.eliminateUnusedCSS()]);
+const productionConfig = merge([parts.eliminateUnusedCSS(), {
+  optimization: {
+    splitChunks: {
+      // css/mini-extra is injected by mini-css-extract-plugin
+      minSize: { javascript: 20000, "css/mini-extra": 10000 },
+    },
+  },
+},
+parts.attachRevision(),
+]);
 
 const developmentConfig = merge([
   { entry: ['webpack-plugin-serve/client'] },

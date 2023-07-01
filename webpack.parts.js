@@ -99,3 +99,22 @@ exports.autoprefixer = () => ({
 });
 
 exports.generateSourceMaps = ({ type }) => ({ devtool: type });
+
+
+exports.clean = () => ({
+  output: {
+    clean: true,
+  },
+});
+
+// versioning
+const webpack = require("webpack");
+const { GitRevisionPlugin } = require("git-revision-webpack-plugin");
+
+exports.attachRevision = () => ({
+  plugins: [
+    new webpack.BannerPlugin({
+      banner: new GitRevisionPlugin().version(),
+    }),
+  ],
+});
