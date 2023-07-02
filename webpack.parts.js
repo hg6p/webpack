@@ -1,18 +1,18 @@
-const { WebpackPluginServe } = require('webpack-plugin-serve');
-const { MiniHtmlWebpackPlugin } = require('mini-html-webpack-plugin');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const { PurgeCSSPlugin } = require('purgecss-webpack-plugin');
-const glob = require('glob');
-const path = require('path');
+const { WebpackPluginServe } = require("webpack-plugin-serve");
+const { MiniHtmlWebpackPlugin } = require("mini-html-webpack-plugin");
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const { PurgeCSSPlugin } = require("purgecss-webpack-plugin");
+const glob = require("glob");
+const path = require("path");
 
-const ALL_FILES = glob.sync(path.join(__dirname, 'src/*.js'));
+const ALL_FILES = glob.sync(path.join(__dirname, "src/*.js"));
 
 exports.devServer = () => ({
   watch: true,
   plugins: [
     new WebpackPluginServe({
       port: parseInt(process.env.PORT, 10) || 8080,
-      static: './dist', // Expose if output.path changes
+      static: "./dist", // Expose if output.path changes
       liveReload: true,
       waitForBuild: true,
     }),
@@ -29,7 +29,7 @@ exports.loadCss = () => ({
     rules: [
       {
         test: /\.css$/,
-        use: ['style-loader', 'css-loader'],
+        use: ["style-loader", "css-loader"],
       },
     ],
   },
@@ -43,7 +43,7 @@ exports.extractCSS = ({ options = {}, loaders = [] } = {}) => {
           test: /\.css$/,
           use: [
             { loader: MiniCssExtractPlugin.loader, options },
-            'css-loader',
+            "css-loader",
           ].concat(loaders),
           sideEffects: true,
         },
@@ -51,16 +51,16 @@ exports.extractCSS = ({ options = {}, loaders = [] } = {}) => {
     },
     plugins: [
       new MiniCssExtractPlugin({
-        filename: '[name].css',
+        filename: "[name].css",
       }),
     ],
   };
 };
 exports.tailwind = () => ({
-  loader: 'postcss-loader',
+  loader: "postcss-loader",
   options: {
     postcssOptions: {
-      plugins: [require('tailwindcss')()],
+      plugins: [require("tailwindcss")()],
     },
   },
 });
@@ -73,33 +73,32 @@ exports.eliminateUnusedCSS = () => ({
         {
           extractor: (content) =>
             content.match(/[^<>"'`\s]*[^<>"'`\s:]/g) || [],
-          extensions: ['html'],
+          extensions: ["html"],
         },
       ],
     }),
   ],
 });
 
-const APP_SOURCE = path.join(__dirname, 'src');
+const APP_SOURCE = path.join(__dirname, "src");
 
 exports.loadJavaScript = () => ({
   module: {
     rules: [
       // Consider extracting include as a parameter
-      { test: /\.js$/, include: APP_SOURCE, use: 'babel-loader' },
+      { test: /\.js$/, include: APP_SOURCE, use: "babel-loader" },
     ],
   },
 });
 
 exports.autoprefixer = () => ({
-  loader: 'postcss-loader',
+  loader: "postcss-loader",
   options: {
-    postcssOptions: { plugins: [require('autoprefixer')()] },
+    postcssOptions: { plugins: [require("autoprefixer")()] },
   },
 });
 
 exports.generateSourceMaps = ({ type }) => ({ devtool: type });
-
 
 exports.clean = () => ({
   output: {
@@ -115,6 +114,30 @@ exports.attachRevision = () => ({
   plugins: [
     new webpack.BannerPlugin({
       banner: new GitRevisionPlugin().version(),
+    }),
+  ],
+});
+
+const TerserPlugin = require("terser-webpack-plugin");
+
+exports.minifyJavaScript = () => ({
+  optimization: { minimizer: [new TerserPlugin()] },
+});
+
+const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
+
+exports.minifyCSS = ({ options }) => ({
+  optimization: {
+    minimizer: [new CssMinimizerPlugin({ minimizerOptions: options })],
+  },
+});
+
+const CompressionPlugin = require("compression-webpack-plugin");
+
+exports.compressionPlugin = () => ({
+  plugins: [
+    new CompressionPlugin({
+      algorithm: "gzip",
     }),
   ],
 });
