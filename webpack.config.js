@@ -23,6 +23,7 @@ const commonConfig = merge([
       usedExports: true,
     },
   },
+  parts.setFreeVariable("HELLO", "hello from config"),
   parts.clean(),
   parts.page({ title: "Demo" }),
   parts.extractCSS({ loaders: cssLoaders }),
