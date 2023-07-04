@@ -36,12 +36,16 @@ const productionConfig = merge([
   parts.minifyJavaScript(),
   parts.minifyCSS({ options: { preset: ["default"] } }),
   parts.eliminateUnusedCSS(),
+  { recordsPath: path.join(__dirname, "records.json") },
   {
     optimization: {
-      splitChunks: {
-        // css/mini-extra is injected by mini-css-extract-plugin
-        minSize: { javascript: 20000, "css/mini-extra": 10000 },
-      },
+      splitChunks: { chunks: "all" },
+      runtimeChunk: { name: "runtime" },
+    },
+    output: {
+      chunkFilename: "[name].[contenthash].js",
+      filename: "[name].[contenthash].js",
+      assetModuleFilename: "[name].[contenthash][ext][query]",
     },
   },
   parts.attachRevision(),
