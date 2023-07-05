@@ -150,3 +150,28 @@ exports.setFreeVariable = (key, value) => {
     plugins: [new webpack.DefinePlugin(env)],
   };
 };
+
+exports.page = ({ title, url = "", chunks } = {}) => ({
+  plugins: [
+    new MiniHtmlWebpackPlugin({
+      publicPath: "/",
+      chunks,
+      filename: `${url && url + "/"}index.html`,
+      context: { title },
+    }),
+  ],
+});
+
+const { ModuleFederationPlugin } = require("webpack").container;
+
+exports.federateModule = ({ name, filename, exposes, remotes, shared }) => ({
+  plugins: [
+    new ModuleFederationPlugin({
+      name,
+      filename,
+      exposes,
+      remotes,
+      shared,
+    }),
+  ],
+});
